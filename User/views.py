@@ -2,6 +2,9 @@ from django.shortcuts import render,redirect
 from Guest.models import *
 from Seller.models import *
 from User.models import *
+import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 def homepage(request):
     if 'uid' in request.session:
@@ -65,6 +68,52 @@ def searchproduct(request):
         category = tbl_category.objects.all()
         brand = tbl_brandname.objects.all()
         productData=tbl_product.objects.all()
+
+
+
+                
+          # Collect original data from the tbl_product
+        product_data = {
+            'product_id': [product.id for product in productData],
+            'product_name': [product.product_name for product in productData],
+            'keywords': [product.product_details for product in productData]
+        }
+        print(product_data)
+        # Create DataFrame from product data
+        products_df = pd.DataFrame(product_data)
+
+        # Sample user's past search/query
+        user_search_history = tbl_history.objects.filter(userID=request.session["uid"])
+
+        # Combine all user search histories into a single query
+        user_query = ' '.join([history.search_history for history in user_search_history])
+
+        # Step 1: TF-IDF Vectorization
+        tfidf_vectorizer = TfidfVectorizer()
+        tfidf_matrix = tfidf_vectorizer.fit_transform(products_df['keywords'])
+
+        # Step 2: Calculate cosine similarity between user query and product keywords
+        user_query_tfidf = tfidf_vectorizer.transform([user_query])
+        cosine_similarities = cosine_similarity(user_query_tfidf, tfidf_matrix)
+
+        # Step 3: Get top N recommendations
+        top_n = 8 # Number of recommendations
+        similar_products_indices = cosine_similarities.argsort()[0][-top_n:][::-1]  # Indices of most similar products
+        print(similar_products_indices)
+        recommended_products = products_df.iloc[similar_products_indices]
+        recommended_products_data = tbl_product.objects.filter(id__in=recommended_products.product_id)
+
+        print(recommended_products)
+        # recommended_products_data = recommended_products.to_dict(orient='records')
+        # print(recommended_products_data)
+
+       
+
+
+
+
+
+
         if request.method=="POST":
             subcategorydata = tbl_subcategory.objects.get(id=request.POST.get('sel_subcategory'))
             if request.POST.get('sel_brand')!="":
@@ -78,7 +127,7 @@ def searchproduct(request):
                 productDatafilter=tbl_product.objects.filter(subcategory=subcategorydata)
                 return render(request,"User/ProductSearch.html",{"productdata":productDatafilter,"categorydata":category,"branddata":brand})
         else:
-            return render(request,"User/ProductSearch.html",{"categorydata":category,"branddata":brand,"productdata":productData})
+            return render(request,"User/ProductSearch.html",{"categorydata":category,"branddata":brand,"productdata":recommended_products_data})
     else:
         return redirect("Guest:Login")
     
@@ -181,6 +230,7 @@ def MyOrders(request,wid):
 def MyBookings(request):
     if 'uid' in request.session:
         userdata=tbl_user.objects.get(id=request.session["uid"])
+        
         bookingdata=tbl_booking.objects.filter(booking_status=2,userID=userdata)
         return render(request,"User/MyBookings.html",{'bookingdata':bookingdata})
     else:
@@ -188,10 +238,14 @@ def MyBookings(request):
 
 def ajaxsearchpdt(request):
     if 'uid' in request.session:
-        pdt  = tbl_product.objects.filter(product_name__istartswith=request.GET.get("key"))
-
-        userdata=tbl_user.objects.get(id=request.session["uid"])
-        tbl_history.objects.create(search_history=request.GET.get("key"),userID=userdata)
+        search_query = request.GET.get("key")
+        pdt  = tbl_product.objects.filter(product_name__istartswith=search_query)
+        if search_query and len(search_query) >= 3:  # Adjust the minimum length as needed
+         # Check if the same word exists for the current user
+            existing_history = tbl_history.objects.filter(search_history__iexact=key, userID=userdata)
+            if not existing_history.exists():
+                userdata=tbl_user.objects.get(id=request.session["uid"])
+                tbl_history.objects.create(search_history=request.GET.get("key"),userID=userdata)
 
         return render(request,"User/AjaxKeySearch.html",{"data":pdt})
     else:

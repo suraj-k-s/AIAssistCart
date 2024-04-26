@@ -11,9 +11,10 @@ class tbl_booking(models.Model):
 class tbl_cart(models.Model):
     productID = models.ForeignKey(tbl_product,on_delete=models.CASCADE)
     cart_status = models.IntegerField(default="0")
-    cart_quantity = models.IntegerField(max_length=50)
+    cart_quantity = models.IntegerField(max_length=11)
     bookingID = models.ForeignKey(tbl_booking,on_delete=models.CASCADE)
 
 class tbl_history(models.Model):
     search_history = models.CharField(max_length=50)
     userID = models.ForeignKey(tbl_user, on_delete=models.CASCADE)
+    datetime = models.DateTimeField(auto_now_add=True)  
