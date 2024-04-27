@@ -86,72 +86,7 @@
 </head>
 
 <body>
-    <!-- <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        <table align="center">
-            <tr>
-                <td>Category</td>
-                <td>
-                    <select name="sel_category" id="sel_category">
-                        <option value="">...Select...</option>
-                        {% for i in categorydata %}
-                        <option value="{{i.id}}">{{i.category_name}}</option>
-                        {% endfor %}
-                    </select>
-                </td>
-                <td>Sub Category</td>
-                <td>
-                    <select name="sel_subcategory" id="sel_subcategory">
-                        <option value="">...Select...</option>
-                    </select>
-                </td>
-                <td>Brand</td>
-                <td>
-                    <select name="sel_brand" id="sel_category">
-                        <option value="">...Select...</option>
-                        {% for i in branddata %}
-                        <option value="{{i.id}}">{{i.brand_name}}</option>
-                        {% endfor %}
-                    </select>
-                </td>
-                <td align="center">
-                    <input type="submit" name="btnsubmit" value="Search">
-                </td>
-            </tr>
-
-
-
-        </table>
-
-
-        <table align="center" cellpadding="10">
-
-
-            <tr>
-                {% for i in productdata %}
-
-                <td>
-                    <p style="border: 3px solid black;  padding: 10px;"><img src="{{i.product_photo.url}}" width="150"
-                            height="150" alt=""><br>
-                        {{i.product_name}}<br>
-                        {{i.subcategory.category.category_name}}<br>
-                        {{i.subcategory.subcategory_name}}<br>
-                        {{i.brand.brand_name}}<br>
-                        {{i.product_price}}<br>
-                        {{i.product_details}}<br>
-                    <p align="center">
-                        <a href="{% url 'User:AddCart' i.id %}">Add to Cart</a>
-                    </p>
-                    </p>
-                </td>
-                {% if forloop.counter|divisibleby:4 %}
-            </tr>
-            <tr>
-                {% endif %}
-                {% endfor %}
-        </table>
-
-    </form> -->
+   
 
 
 
@@ -271,17 +206,21 @@
 
                         <div class="block2-txt flex-w flex-t p-t-14">
                             <div class="block2-txt-child1 flex-col-l ">
-                                <a href="" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
+                                <a class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
                                     {{i.product_name}}
                                 </a>
 
                                 <span class="stext-105 cl3">
                                     {{i.product_price}} RS
+                                    </span>
+                                    <span class="stext-105 cl3">
+                                        {{i.product_brand}}
+                                        </span>
                                     
                             </div>
 
                             <div class="block2-txt-child2 flex-r p-t-3">
-                                <a href="{% url 'User:AddCart' i.id %}" class="btn-addwish-b2 dis-block pos-relative ">
+                                <a href="{% url 'User:AddCart' i.product_id %}" class="btn-addwish-b2 dis-block pos-relative ">
                                     <div class="icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 ">
                                         <i class="zmdi zmdi-shopping-cart" style="color: rgb(137, 137, 229);"></i>
                                     </div>
