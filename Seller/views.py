@@ -118,3 +118,15 @@ def vieworder(request):
 def Myorders(request,mid):
     OrderData=tbl_cart.objects.filter(bookingID=mid)
     return render(request,"Seller/View_product.html",{"data":OrderData})
+
+# def productupdate(request,said):
+#     editdata=tbl_product.objects.get(id=said)
+#     if request.method=="POST":
+#         editdata.product_name=request.POST.get("txtname")
+#         editdata.product_price=request.POST.get("txtprice")
+#         editdata.product_details=request.POST.get("txtdetails")
+#         editdata.product_photo=request.POST.get("fileImage")
+#         editdata.save()
+#         return redirect("Seller:product_details")
+#     else:
+#         return render(request,"Seller\Product.html",{"editdata":editdata})

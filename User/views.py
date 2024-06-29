@@ -44,7 +44,7 @@ def changepassword(request):
                     userdata.save()
                     return render(request,"User/ChangePassword.html",{'msg':"Password Updated"})
                 else:
-                    return render(request,"User/ChangePassword.html",{'msg1':"Error in confirm Password"})
+                    return render(request,"User/ChangePas-sword.html",{'msg1':"Error in confirm Password"})
             else:
                 return render(request,"User/ChangePassword.html",{'msg1':"Error in current password"})
         else:
@@ -68,10 +68,6 @@ def searchproduct(request):
         category = tbl_category.objects.all()
         brand = tbl_brandname.objects.all()
         productData=tbl_product.objects.all()
-
-
-
-                
           # Collect original data from the tbl_product
         product_data = {
             'product_id': [product.id for product in productData],
@@ -100,7 +96,7 @@ def searchproduct(request):
         cosine_similarities = cosine_similarity(user_query_tfidf, tfidf_matrix)
 
         # Step 3: Get top N recommendations
-        top_n = 100 
+        top_n = 60 
         # Number of recommendations
         similar_products_indices = cosine_similarities.argsort()[0][-top_n:][::-1]  # Indices of most similar products
         print(similar_products_indices)
@@ -111,16 +107,8 @@ def searchproduct(request):
         # print(recommended_products_dat)
         # recommended_products_data = tbl_product.objects.filter(id__in=recommended_products.product_id)
         # print(recommended_products_data)
-
         # recommended_products_data = recommended_products.to_dict(orient='records')
         # print(recommended_products_data)
-
-       
-
-
-
-
-
 
         if request.method=="POST":
             subcategorydata = tbl_subcategory.objects.get(id=request.POST.get('sel_subcategory'))

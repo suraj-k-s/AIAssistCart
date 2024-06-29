@@ -22,4 +22,6 @@ urlpatterns = [
 
     path('ProductImages/',views.product_images,name="product_images"),
     path('Ajaxproduct/',views.ajaxproduct,name="ajaxproduct"),
+
+    # path('productupdate/<int:said>',views.productupdate,name="productupdate"),
 ]
